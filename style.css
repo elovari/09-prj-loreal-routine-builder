@@ -40,22 +40,31 @@ body {
 .search-section {
   margin: 30px 0;
   display: flex;
+  /* keep items left aligned so added margin on the select nudges it right */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px; /* add space between filter and category/search box */
 }
 
+/* make the filter box bigger, more curved, and bolder */
 .search-section select {
   width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  border: 2px solid #000;
-  border-radius: 8px;
+  padding: 20px; /* increased padding to make box larger */
+  font-size: 20px; /* larger, easier-to-read text */
+  border: 4px solid #000; /* thicker border for a bolder look */
+  border-radius: 20px; /* more pronounced curved corners */
   cursor: pointer;
   background-color: white;
-  font-weight: 500;
+  font-weight: 800; /* very bold font */
+  margin-left: 0; /* gap provides spacing */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); /* stronger shadow for emphasis */
+  transition: border-color 0.12s, box-shadow 0.12s, transform 0.12s;
 }
 
 .search-section select:focus {
   outline: none;
-  border-color: #666;
+  border-color: #111; /* slightly darker on focus */
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
 }
 
 /* chat section */
@@ -179,6 +188,7 @@ body {
 }
 
 .product-card {
+  position: relative; /* needed so expanded description can overlay the whole card */
   flex: 0 1 calc(33.333% - 14px);
   border: 1px solid #ccc;
   padding: 15px;
@@ -213,6 +223,110 @@ body {
   color: #666;
 }
 
+/* Info button (inline within product card) */
+.product-card .info-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+  background: transparent;
+  border: 2px solid #000;
+  color: #000;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+.product-card .info-btn:hover,
+.product-card .info-btn:focus {
+  background: #000;
+  color: #fff;
+  outline: none;
+}
+
+/* Collapsible product description inside the card (collapsed) */
+.product-desc {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 260ms ease, padding 160ms ease, opacity 160ms ease;
+  padding: 0 0;
+  margin-top: 8px;
+  color: #333;
+  background: #fff;
+  font-size: 14px;
+  border-radius: 6px;
+  /* keep it in-flow when collapsed so layout doesn't jump */
+  position: relative;
+  z-index: 1;
+}
+
+/* expanded state becomes an overlay that fills the entire .product-card */
+.product-desc.expanded {
+  position: absolute;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  margin: 0;
+  padding: 14px;
+  max-height: none;
+  overflow: auto;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  z-index: 60;
+  border-radius: 8px;
+  display: block;
+  opacity: 1;
+}
+
+/* ensure desc content scrolls if long */
+.product-desc .desc-content {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #222;
+  margin-top: 6px;
+}
+
+/* close button inside the overlay */
+.product-desc .desc-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  color: #333;
+  border-radius: 6px;
+}
+.product-desc .desc-close:hover,
+.product-desc .desc-close:focus {
+  background: #111;
+  color: #fff;
+  outline: none;
+}
+
+/* flip close button for RTL */
+html[dir="rtl"] .product-desc .desc-close {
+  right: auto;
+  left: 8px;
+}
+
+/* ensure expanded overlay text alignment respects dir */
+html[dir="rtl"] .product-desc.expanded .desc-content {
+  text-align: right;
+}
+html[dir="ltr"] .product-desc.expanded .desc-content {
+  text-align: left;
+}
+
+/* selected product visual (visible border + subtle lift) */
+.product-card.selected {
+  border-color: #ff9800;
+  box-shadow: 0 6px 18px rgba(255, 152, 0, 0.12);
+  transform: translateY(-4px);
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
 /* selected products */
 .selected-products {
   margin: 40px 0;
@@ -230,6 +344,35 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+/* selected products list items */
+#selectedProductsList .selected-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #e6e6e6;
+  font-size: 14px;
+}
+
+#selectedProductsList .selected-item .sel-name {
+  flex: 1;
+}
+
+#selectedProductsList .selected-item .remove-item {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#selectedProductsList .selected-item .remove-item:hover {
+  background: #f5f5f5;
 }
 
 .generate-btn {
@@ -252,4 +395,68 @@ body {
 
 .generate-btn i {
   margin-right: 8px;
+}
+
+/* —— RTL support —— */
+/* Add these rules so setting dir="rtl" on <html> or <body> will flip layout and alignments */
+html[dir="rtl"],
+body[dir="rtl"] {
+  direction: rtl;
+  /* ensure text defaults align right in RTL */
+  text-align: right;
+}
+
+/* Reverse order of inline controls in the search section and align the select text */
+html[dir="rtl"] .search-section {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 12px;
+}
+html[dir="rtl"] .search-section select,
+html[dir="rtl"] input[type="search"] {
+  text-align: right;
+}
+
+/* Product card layout: place image on the right and info on the left (row-reverse) */
+html[dir="rtl"] .products-grid {
+  /* grid spacing and wrapping remain the same */
+}
+html[dir="rtl"] .product-card {
+  flex-direction: row-reverse;
+}
+html[dir="rtl"] .product-card .product-info {
+  text-align: right;
+}
+
+/* Selected products list: reverse the inline order and align controls to the right */
+html[dir="rtl"] .selected-products {
+  text-align: right;
+}
+html[dir="rtl"] #selectedProductsList {
+  justify-content: flex-end;
+}
+html[dir="rtl"] #selectedProductsList .selected-item {
+  flex-direction: row-reverse;
+}
+
+/* Chat window and chat form should read right-to-left and align text accordingly */
+html[dir="rtl"] .chatbox,
+html[dir="rtl"] .chat-window,
+html[dir="rtl"] .chat-form {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Modal content should also adopt RTL when page is RTL */
+html[dir="rtl"] .modal,
+html[dir="rtl"] .modal .meta {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Keep interactive focus outlines visually consistent in RTL */
+html[dir="rtl"] .chat-form button:focus,
+html[dir="rtl"] .search-section select:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
 }
